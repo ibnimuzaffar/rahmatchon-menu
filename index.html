@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1a14">
+<title>Кахвахонаи Рахматчон — меню</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1a14; --surface:#16251c; --text:#f2efe6; --muted:#a9b5ab;
+  --gold:#d6a642; --green:#2b5a3f; --line:rgba(255,255,255,.08); --off:#738076;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:116px}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+header.topbar,nav.tabs,.about-card,.search,.item,.card-item,.btn,.add-btn,.lang-switch button,.qty-btn,.cart-order-btn,#cartBar,#up{transition:none}
+.sticky-top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;max-width:640px;margin:0 auto;
+  padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px}
+.brand-box{display:flex;align-items:center;gap:8px;min-width:0}
+.logo-badge{width:34px;height:34px;flex:none;border-radius:10px;background:var(--surface);border:1px solid var(--gold);
+  color:var(--gold);font-family:"Playfair Display",Georgia,serif;font-size:18px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.brand-text{min-width:0}
+.brand-name{font-family:"Playfair Display",Georgia,serif;font-size:15px;font-weight:700;line-height:1.1;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-sub{font-size:11px;color:var(--muted);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-center{font-family:"Playfair Display",Georgia,serif;font-size:14px;font-weight:600;color:var(--gold);text-align:center}
+.top-right{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.table-tag{display:inline-flex;align-items:center;height:26px;padding:0 8px;border-radius:999px;
+  border:1px solid var(--gold);background:var(--surface);color:var(--gold);font-size:11px;font-weight:600;white-space:nowrap}
+.lang-switch{display:inline-flex;gap:2px;padding:2px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.lang-switch button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:11px;font-weight:600;
+  min-width:28px;height:24px;padding:0 6px;border-radius:999px;cursor:pointer}
+.lang-switch button.on{background:var(--gold);color:#0f1a14}
+.lang-switch button:active{opacity:.8}
+.lang-switch button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:6px 12px 10px;max-width:640px;margin:0 auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;
+  background:var(--surface);border:1px solid var(--line);color:var(--text);text-decoration:none;font-weight:600;font-size:13px}
+.tabs a .tab-cnt{font-size:11px;color:var(--muted)}
+.tabs a.on{background:var(--gold);border-color:var(--gold);color:#0f1a14}
+.tabs a.on .tab-cnt{color:#0f1a14;opacity:.8}
+.tabs a:active{opacity:.85}
+.controls{max-width:640px;margin:12px auto 0;padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.about-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0}
+.about-card summary{list-style:none;cursor:pointer;padding:12px 16px;font-weight:600;color:var(--text);
+  display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.about-card summary::-webkit-details-marker{display:none}
+.about-card summary::after{content:"▾";color:var(--gold);font-size:14px}
+.about-card[open] summary::after{content:"▴"}
+.about-body{padding:0 16px 14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.about-body p{margin:8px 0 0}
+.about-body a{color:var(--gold);text-decoration:none}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.btn,.btn.alt{height:44px;min-height:44px;border:1.5px solid var(--gold);border-radius:12px;padding:0 10px;
+  font:inherit;font-size:13px;font-weight:600;background:transparent;color:var(--gold);cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn:active,.btn.alt:active,.add-btn:active,.qty-btn:active,.cart-order-btn:active{background:var(--green);color:var(--text)}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible,.tabs a:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.search input{width:100%;min-height:44px;padding:10px 14px;border-radius:16px;border:1px solid var(--line);
+  background:var(--surface);color:var(--text);font:inherit}
+.search input::placeholder{color:var(--muted)}
+main{max-width:640px;margin:0 auto;padding:4px 12px 104px}
+section h2{margin:24px 0 8px;font-family:"Playfair Display",Georgia,serif;font-size:22px;font-weight:700;color:var(--text)}
+.photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px}
+.card-item{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card-item img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.card-body{padding:10px 12px;display:flex;flex-direction:column;flex:1;gap:6px}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:4px}
+.item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.info{flex:1;min-width:0}
+.name{font-weight:600;color:var(--text)}
+.desc,.w{color:var(--muted);font-size:13px;margin-top:2px}
+.price-col{flex:none;display:flex;align-items:center;gap:10px}
+.price{font-weight:700;color:var(--gold);white-space:nowrap;text-align:right;line-height:1.15}
+.price small{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:2px}
+.add-btn{min-width:44px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--gold);
+  font:inherit;font-size:22px;line-height:1;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.add-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.ask{color:var(--muted);font-weight:500;font-size:13px}
+.item.off .name,.item.off .desc,.card-item.off .name,.card-item.off .desc{color:var(--off)}
+.item.off .name,.card-item.off .name{text-decoration:line-through}
+@media (max-width:370px){
+  .top-center{display:none}
+  .topbar{grid-template-columns:1fr auto}
+}
+.empty{padding:32px 0;color:var(--muted);text-align:center}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:608px;margin:0 auto;
+  background:var(--surface);color:var(--text);border:1px solid var(--gold);padding:14px 16px;border-radius:12px;display:none;z-index:12}
+#up{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:44px;height:44px;
+  border-radius:50%;border:1px solid var(--gold);background:var(--surface);color:var(--gold);font-size:20px;cursor:pointer;z-index:7;display:none}
+#up.show{display:block}
+#up.has-cart{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+#cartBar{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  max-width:608px;min-height:48px;margin:0 auto;background:var(--green);color:var(--text);border:1px solid var(--gold);
+  border-radius:12px;padding:12px 16px;font:inherit;font-weight:600;display:none;align-items:center;justify-content:space-between;
+  gap:12px;cursor:pointer;z-index:8}
+#cartBar.show{display:flex}
+#cartModal{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:10;display:none;align-items:flex-end;justify-content:center}
+#cartModal.open{display:flex}
+.cart-sheet{width:100%;max-width:640px;max-height:85vh;background:var(--surface);color:var(--text);
+  border-top:1px solid var(--line);border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+.cart-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cart-head h2{margin:0;font-family:"Playfair Display",Georgia,serif;font-size:20px}
+.cart-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.cart-close{min-width:44px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);
+  color:var(--text);font-size:20px;line-height:1;cursor:pointer}
+.cart-list{overflow-y:auto;padding:0 16px;flex:1}
+.cart-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.cart-row-info{flex:1;min-width:0}
+.cart-row-name{font-weight:600;color:var(--text)}
+.cart-row-price{font-size:13px;color:var(--muted);margin-top:2px}
+.cart-ctrl{display:flex;align-items:center;gap:6px;flex:none}
+.qty-btn{min-width:44px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);
+  color:var(--text);font:inherit;font-weight:700;cursor:pointer}
+.qty-val{min-width:24px;text-align:center;font-weight:600}
+.del-btn{min-width:44px;min-height:44px;border-radius:10px;border:0;background:transparent;color:var(--muted);
+  font-size:16px;cursor:pointer}
+.cart-foot{padding:14px 16px 16px;border-top:1px solid var(--line);background:var(--surface)}
+.cart-comment{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--bg);color:var(--text);font:inherit;resize:vertical;min-height:44px;margin-bottom:12px}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:17px;margin-bottom:12px;color:var(--gold)}
+.cart-order-btn{width:100%;min-height:48px;padding:12px 16px;border-radius:10px;border:1px solid var(--gold);background:var(--green);color:var(--text);
+  font:inherit;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="sticky-top">
+  <header class="topbar">
+    <div class="brand-box">
+      <div class="logo-badge" aria-hidden="true" data-i18n="logoLetter">Р</div>
+      <div class="brand-text">
+        <div class="brand-name" data-i18n="brandShort">Рахматчон</div>
+        <div class="brand-sub" data-i18n="brandSub">Кахвахона</div>
+      </div>
+    </div>
+    <div class="top-center" data-i18n="menuWord">Меню</div>
+    <div class="top-right">
+      <span class="table-tag" id="tableTag" hidden></span>
+      <div class="lang-switch" role="group" aria-label="Язык">
+        <button type="button" data-lang="tj">TJ</button>
+        <button type="button" data-lang="ru" class="on">RU</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Разделы меню"></nav>
+</div>
+
+<div class="controls">
+  <details class="about-card">
+    <summary data-i18n="aboutTitle">О кафе</summary>
+    <div class="about-body">
+      <p data-i18n="addr">ул. Саидолимов 16, круги Ором</p>
+      <p><span data-i18n="phoneLabel">Телефон</span>: <a href="tel:+992000000000">+992 (00) 000-00-00</a></p>
+      <p data-i18n="hours">Ежедневно 08:00–22:00</p>
+      <div class="actions">
+        <button class="btn" data-call="waiter" data-i18n="callWaiter">Позвать официанта</button>
+        <button class="btn alt" data-call="bill" data-i18n="callBill">Счёт</button>
+      </div>
+    </div>
+  </details>
+  <div class="search"><input id="q" type="search" placeholder="Поиск" aria-label="Поиск"></div>
+</div>
+
+<main id="menu"></main>
+<button id="up" aria-label="Наверх">↑</button>
+<button id="cartBar" type="button"></button>
+<div id="cartModal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <div class="cart-sheet">
+    <div class="cart-head">
+      <div>
+        <h2 id="cartTitle">Корзина</h2>
+        <div class="cart-sub" id="cartTableInfo"></div>
+      </div>
+      <button type="button" class="cart-close" id="cartClose" aria-label="Закрыть">×</button>
+    </div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-foot">
+      <textarea id="cartComment" class="cart-comment" rows="2"></textarea>
+      <div class="cart-total-row">
+        <span id="cartTotalLabel">Итого</span>
+        <span id="cartTotalVal">0 сом.</span>
+      </div>
+      <button type="button" class="cart-order-btn" id="orderBtn">Заказать</button>
+    </div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* Данные меню загружаются из menu.json. price: null — цена 0 или не указана, нужно уточнить.
+   off: true — нет в наличии. photo: "img/имя.jpg" — только реальные фото порций. w: вес/объём. */
+let MENU = [];
+
+const $ = s => document.querySelector(s);
+const menuEl = $("#menu"), tabsEl = $("#tabs");
+
+const I18N = {
+  ru: {
+    htmlLang: "ru",
+    title: "Кахвахонаи Рахматчон — меню",
+    logoLetter: "Р",
+    brandShort: "Рахматчон",
+    brandSub: "Кахвахона",
+    menuWord: "Меню",
+    aboutTitle: "О кафе",
+    phoneLabel: "Телефон",
+    brand: "Кахвахонаи Рахматчон",
+    addr: "ул. Саидолимов 16, круги Ором",
+    hours: "Ежедневно 08:00–22:00",
+    callWaiter: "Позвать официанта",
+    callBill: "Счёт",
+    search: "Поиск",
+    sectionsLabel: "Разделы меню",
+    upLabel: "Наверх",
+    table: "Стол",
+    ask: "уточняйте",
+    currency: "сом.",
+    off: "Нет в наличии",
+    empty: "Ничего не найдено. Попробуйте другое слово.",
+    loadErr: "Не удалось загрузить меню. Откройте сайт через локальный или веб-сервер.",
+    waiter: "Официант",
+    bill: "Счёт",
+    callOk: (what, tbl) => what + ": запрос для стола " + tbl + " (пока заглушка)",
+    callNoTable: "Откройте меню по QR-коду со стола",
+    cartBar: (n, sum) => "Корзина: " + n + " поз., сумма " + sum + " сом.",
+    cartTitle: "Корзина",
+    cartEmpty: "Корзина пуста",
+    totalLabel: "Итого",
+    commentPlaceholder: "Комментарий к заказу",
+    orderBtn: "Заказать",
+    orderSent: "Заказ отправлен (тест)",
+    addLabel: "Добавить",
+    removeLabel: "Удалить",
+    closeLabel: "Закрыть"
+  },
+  tj: {
+    htmlLang: "tg",
+    title: "Қаҳвахонаи Раҳматҷон — меню",
+    logoLetter: "Р",
+    brandShort: "Раҳматҷон",
+    brandSub: "Қаҳвахона",
+    menuWord: "Меню",
+    aboutTitle: "Дар бораи қаҳвахона",
+    phoneLabel: "Телефон",
+    brand: "Қаҳвахонаи Раҳматҷон",
+    addr: "кӯч. Саидолимов 16, гардиши Ором",
+    hours: "Ҳар рӯз 08:00–22:00",
+    callWaiter: "Даъвати пешхизмат",
+    callBill: "Ҳисоб",
+    search: "Ҷустуҷӯ",
+    sectionsLabel: "Бахшҳои меню",
+    upLabel: "Ба боло",
+    table: "Миз",
+    ask: "пурсед",
+    currency: "сом.",
+    off: "Мавҷуд нест",
+    empty: "Чизе ёфт нашуд. Калимаи дигарро санҷед.",
+    loadErr: "Меню бор нашуд. Сомонаро тавассути сервери маҳаллӣ ё веб-сервер кушоед.",
+    waiter: "Пешхизмат",
+    bill: "Ҳисоб",
+    callOk: (what, tbl) => what + ": дархост барои мизи " + tbl + " (муваққатан санҷишӣ)",
+    callNoTable: "Менюро бо QR-коди рӯи миз кушоед",
+    cartBar: (n, sum) => "Сабад: " + n + " номгӯй, маблағ " + sum + " сом.",
+    cartTitle: "Сабад",
+    cartEmpty: "Сабад холӣ аст",
+    totalLabel: "Ҷамъ",
+    commentPlaceholder: "Шарҳ ба фармоиш",
+    orderBtn: "Фармоиш додан",
+    orderSent: "Фармоиш фиристода шуд (тест)",
+    addLabel: "Илова кардан",
+    removeLabel: "Нест кардан",
+    closeLabel: "Пӯшидан"
+  },
+  en: {
+    htmlLang: "en",
+    title: "Rahmatjon Coffeehouse — Menu",
+    logoLetter: "R",
+    brandShort: "Rahmatjon",
+    brandSub: "Coffeehouse",
+    menuWord: "Menu",
+    aboutTitle: "About cafe",
+    phoneLabel: "Phone",
+    brand: "Rahmatjon Coffeehouse",
+    addr: "16 Saidolimov St, Orom Circle",
+    hours: "Daily 08:00–22:00",
+    callWaiter: "Call waiter",
+    callBill: "Bill",
+    search: "Search",
+    sectionsLabel: "Menu sections",
+    upLabel: "Back to top",
+    table: "Table",
+    ask: "ask price",
+    currency: "TJS",
+    off: "Unavailable",
+    empty: "Nothing found. Try another word.",
+    loadErr: "Failed to load menu. Open the site via a local or web server.",
+    waiter: "Waiter",
+    bill: "Bill",
+    callOk: (what, tbl) => what + ": request for table " + tbl + " (stub)",
+    callNoTable: "Open the menu via the table QR code",
+    cartBar: (n, sum) => "Cart: " + n + " items, total " + sum + " TJS",
+    cartTitle: "Cart",
+    cartEmpty: "Cart is empty",
+    totalLabel: "Total",
+    commentPlaceholder: "Order comment",
+    orderBtn: "Order",
+    orderSent: "Order sent (test)",
+    addLabel: "Add",
+    removeLabel: "Remove",
+    closeLabel: "Close"
+  }
+};
+
+let lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("lang") || "ru";
+if (!I18N[lang]) lang = "ru";
+
+const t = key => I18N[lang][key] || I18N.ru[key];
+const pick = (obj, base, suf) => (lang !== "ru" && obj[suf]) || obj[base] || "";
+
+function applyLang(){
+  const L = I18N[lang];
+  document.documentElement.lang = L.htmlLang;
+  document.title = L.title;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.textContent = L[el.dataset.i18n];
+  });
+  $("#q").placeholder = L.search;
+  $("#q").setAttribute("aria-label", L.search);
+  tabsEl.setAttribute("aria-label", L.sectionsLabel);
+  $("#up").setAttribute("aria-label", L.upLabel);
+  $("#cartTitle").textContent = L.cartTitle;
+  $("#cartClose").setAttribute("aria-label", L.closeLabel);
+  $("#cartComment").placeholder = L.commentPlaceholder;
+  $("#cartTotalLabel").textContent = L.totalLabel;
+  $("#orderBtn").textContent = L.orderBtn;
+  $("#cartTableInfo").textContent = table ? (L.table + " " + table) : L.callNoTable;
+  if (table) $("#tableTag").textContent = L.table + " " + table;
+  document.querySelectorAll(".lang-switch button").forEach(b => {
+    b.classList.toggle("on", b.dataset.lang === lang);
+  });
+}
+
+function setLang(next){
+  if (!I18N[next] || next === lang) return;
+  lang = next;
+  localStorage.setItem("lang", lang);
+  applyLang();
+  if (MENU.length) render($("#q").value);
+  renderCart();
+}
+
+const itemById = new Map();
+const idByItem = new WeakMap();
+
+function itemHTML(it){
+  const name = pick(it, "n", "name_" + lang);
+  const desc = pick(it, "d", "description_" + lang);
+  const weight = pick(it, "w", "w_" + lang);
+  const price = it.p == null
+    ? '<span class="ask">' + t("ask") + '</span>'
+    : it.p + ' <small>' + t("currency") + '</small>';
+  const w = weight ? '<div class="w">' + weight + '</div>' : '';
+  const d = desc ? '<div class="desc">' + desc + '</div>' : '';
+  const off = it.off ? '<div class="desc">' + t("off") + '</div>' : '';
+  const addBtn = (!it.off && it.p != null)
+    ? '<button type="button" class="add-btn" data-add="' + idByItem.get(it) + '" aria-label="' + t("addLabel") + ' ' + name + '">+</button>'
+    : '';
+  if (it.photo) {
+    return '<div class="card-item' + (it.off ? ' off' : '') + '">' +
+      '<img src="' + it.photo + '" alt="' + name + '" loading="lazy">' +
+      '<div class="card-body"><div class="name">' + name + '</div>' + w + off +
+      '<div class="card-foot"><div class="price">' + (it.off ? '' : price) + '</div>' + addBtn + '</div></div></div>';
+  }
+  return '<div class="item' + (it.off ? ' off' : '') + '">' +
+    '<div class="info"><div class="name">' + name + '</div>' + w + d + off + '</div>' +
+    '<div class="price-col"><div class="price">' + (it.off ? '' : price) + '</div>' + addBtn + '</div></div>';
+}
+
+function render(filter){
+  const f = (filter || "").trim().toLowerCase();
+  let html = "", tabs = "", shown = 0;
+  MENU.forEach(cat => {
+    const title = pick(cat, "title", "title_" + lang);
+    const items = cat.items.filter(i => {
+      if (!f) return true;
+      const hay = [i.n, i.name_tj, i.name_en, i.d, i.description_tj, i.description_en].filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(f);
+    });
+    if (!items.length) return;
+    shown += items.length;
+    const withPhoto = items.filter(i => i.photo);
+    const noPhoto = items.filter(i => !i.photo);
+    const body = (withPhoto.length ? '<div class="photo-grid">' + withPhoto.map(itemHTML).join("") + '</div>' : '') +
+      noPhoto.map(itemHTML).join("");
+    html += '<section id="' + cat.id + '"><h2>' + title + '</h2>' + body + '</section>';
+    tabs += '<a href="#' + cat.id + '" data-id="' + cat.id + '">' + title + ' <span class="tab-cnt">' + items.length + '</span></a>';
+  });
+  menuEl.innerHTML = shown ? html : '<div class="empty">' + t("empty") + '</div>';
+  tabsEl.innerHTML = tabs;
+  observe();
+}
+
+let io, activeId = null, tabRaf = 0;
+function observe(){
+  if (io) io.disconnect();
+  if (tabRaf) cancelAnimationFrame(tabRaf);
+  activeId = null;
+  const links = Array.from(tabsEl.querySelectorAll("a"));
+  io = new IntersectionObserver(es => {
+    let nextId = null;
+    for (const e of es) {
+      if (e.isIntersecting) nextId = e.target.id;
+    }
+    if (!nextId || nextId === activeId) return;
+    activeId = nextId;
+    if (tabRaf) cancelAnimationFrame(tabRaf);
+    tabRaf = requestAnimationFrame(() => {
+      tabRaf = 0;
+      let on = null;
+      for (const a of links) {
+        const isMatch = a.dataset.id === activeId;
+        a.classList.toggle("on", isMatch);
+        if (isMatch) on = a;
+      }
+      if (on) {
+        const left = on.offsetLeft - (tabsEl.clientWidth - on.offsetWidth) / 2;
+        tabsEl.scrollTo({ left: Math.max(0, left), behavior: "auto" });
+      }
+    });
+  }, {rootMargin:"-120px 0px -70% 0px"});
+  menuEl.querySelectorAll("section").forEach(s => io.observe(s));
+}
+
+/* Номер стола из QR: ?table=7 */
+const table = new URLSearchParams(location.search).get("table");
+if (table){ $("#tableTag").hidden = false; }
+
+const CART_KEY = "cart_table_" + (table || "none");
+let cart = { items: {}, comment: "" };
+try {
+  const saved = JSON.parse(localStorage.getItem(CART_KEY) || "null");
+  if (saved && typeof saved === "object") {
+    cart = { items: saved.items && typeof saved.items === "object" ? saved.items : {}, comment: String(saved.comment || "") };
+  }
+} catch (_) {}
+
+function saveCart(){
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (_) {}
+}
+
+function renderCart(){
+  const entries = Object.entries(cart.items).filter(([id, qty]) => qty > 0 && itemById.has(id));
+  let totalQty = 0, totalSum = 0, listHtml = "";
+  for (const [id, qty] of entries) {
+    const it = itemById.get(id);
+    const name = pick(it, "n", "name_" + lang);
+    const w = pick(it, "w", "w_" + lang);
+    totalQty += qty;
+    totalSum += it.p * qty;
+    listHtml += '<div class="cart-row">' +
+      '<div class="cart-row-info"><div class="cart-row-name">' + name + (w ? ' (' + w + ')' : '') + '</div>' +
+      '<div class="cart-row-price">' + it.p + ' ' + t("currency") + ' × ' + qty + ' = ' + (it.p * qty) + ' ' + t("currency") + '</div></div>' +
+      '<div class="cart-ctrl">' +
+      '<button type="button" class="qty-btn" data-dec="' + id + '">−</button>' +
+      '<span class="qty-val">' + qty + '</span>' +
+      '<button type="button" class="qty-btn" data-inc="' + id + '">+</button>' +
+      '<button type="button" class="del-btn" data-del="' + id + '" aria-label="' + t("removeLabel") + '">✕</button>' +
+      '</div></div>';
+  }
+  const bar = $("#cartBar");
+  const hasItems = totalQty > 0;
+  bar.classList.toggle("show", hasItems);
+  $("#up").classList.toggle("has-cart", hasItems);
+  if (hasItems) {
+    bar.innerHTML = '<span>' + t("cartBar")(totalQty, totalSum) + '</span><span>›</span>';
+  }
+  $("#cartList").innerHTML = hasItems ? listHtml : '<div class="empty">' + t("cartEmpty") + '</div>';
+  $("#cartTotalVal").textContent = totalSum + ' ' + t("currency");
+  $("#orderBtn").disabled = !hasItems;
+  if ($("#cartComment").value !== cart.comment) $("#cartComment").value = cart.comment;
+}
+
+function addToCart(id){
+  if (!itemById.has(id)) return;
+  cart.items[id] = (cart.items[id] || 0) + 1;
+  saveCart();
+  renderCart();
+}
+
+function toast(msg){
+  const el = $("#toast"); el.textContent = msg; el.style.display = "block";
+  clearTimeout(toast.id); toast.id = setTimeout(() => el.style.display = "none", 3000);
+}
+document.querySelectorAll("[data-call]").forEach(b => b.addEventListener("click", () => {
+  const what = t(b.dataset.call === "waiter" ? "waiter" : "bill");
+  /* TODO: отправка на сервер, уведомление официанту этого стола */
+  toast(table ? t("callOk")(what, table) : t("callNoTable"));
+}));
+document.querySelectorAll(".lang-switch button").forEach(b => {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+});
+
+menuEl.addEventListener("click", e => {
+  const btn = e.target.closest("[data-add]");
+  if (btn) addToCart(btn.dataset.add);
+});
+$("#cartBar").addEventListener("click", () => $("#cartModal").classList.add("open"));
+$("#cartClose").addEventListener("click", () => $("#cartModal").classList.remove("open"));
+$("#cartModal").addEventListener("click", e => {
+  if (e.target.id === "cartModal") $("#cartModal").classList.remove("open");
+});
+$("#cartList").addEventListener("click", e => {
+  const inc = e.target.closest("[data-inc]");
+  const dec = e.target.closest("[data-dec]");
+  const del = e.target.closest("[data-del]");
+  if (inc) { addToCart(inc.dataset.inc); return; }
+  if (dec) {
+    const id = dec.dataset.dec;
+    if ((cart.items[id] || 0) > 1) cart.items[id] -= 1;
+    else delete cart.items[id];
+    saveCart(); renderCart(); return;
+  }
+  if (del) {
+    delete cart.items[del.dataset.del];
+    saveCart(); renderCart();
+  }
+});
+$("#cartComment").addEventListener("input", e => {
+  cart.comment = e.target.value;
+  saveCart();
+});
+$("#orderBtn").addEventListener("click", () => {
+  const items = Object.entries(cart.items)
+    .filter(([id, qty]) => qty > 0 && itemById.has(id))
+    .map(([id, qty]) => ({ id, qty }));
+  if (!items.length) return;
+  const order = { table: table || null, items, comment: cart.comment.trim() };
+  console.log(JSON.stringify(order), order);
+  cart = { items: {}, comment: "" };
+  saveCart();
+  renderCart();
+  $("#cartModal").classList.remove("open");
+  toast(t("orderSent"));
+});
+
+$("#q").addEventListener("input", e => render(e.target.value));
+$("#up").addEventListener("click", () => window.scrollTo({top:0}));
+window.addEventListener("scroll", () => {
+  $("#up").classList.toggle("show", window.scrollY > 400);
+}, { passive: true });
+
+async function loadMenu(){
+  try {
+    const res = await fetch("menu.json");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    MENU = await res.json();
+    itemById.clear();
+    MENU.forEach(cat => {
+      cat.items.forEach((it, idx) => {
+        const id = it.id || (cat.id + "-" + idx);
+        itemById.set(id, it);
+        idByItem.set(it, id);
+      });
+    });
+    render();
+    renderCart();
+  } catch (err) {
+    console.error("Ошибка загрузки menu.json:", err);
+    menuEl.innerHTML = '<div class="empty">' + t("loadErr") + '</div>';
+  }
+}
+
+applyLang();
+loadMenu();
+</script>
+</body>
+</html>
