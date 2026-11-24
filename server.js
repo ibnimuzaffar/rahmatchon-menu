@@ -80,11 +80,42 @@ function readJsonBody(req, maxBytes = 64 * 1024) {
   });
 }
 
+// Telegram limits: ~1 msg/sec per chat, ~20 msg/min per group.
+// All messages go to one chat, so send them strictly one by one with a gap.
+const TG_MIN_INTERVAL_MS = Number(process.env.TELEGRAM_MIN_INTERVAL_MS) || 3100;
+const TG_MAX_RETRIES = 3;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+let tgQueue = Promise.resolve();
+let tgLastSentAt = 0;
+
 function sendTelegram(text) {
   if (!BOT_TOKEN || !CHAT_ID) {
     console.log("[Telegram dry-run]\n" + text + "\n---");
     return Promise.resolve({ dryRun: true });
   }
+  const job = tgQueue.then(() => sendTelegramWithRetry(text));
+  tgQueue = job.catch(() => {}); // keep the queue alive after a failure
+  return job;
+}
+
+async function sendTelegramWithRetry(text) {
+  for (let attempt = 0; ; attempt++) {
+    const wait = tgLastSentAt + TG_MIN_INTERVAL_MS - Date.now();
+    if (wait > 0) await sleep(wait);
+    try {
+      return await sendTelegramRaw(text);
+    } catch (err) {
+      if (err.retryAfter == null || attempt >= TG_MAX_RETRIES) throw err;
+      console.warn(`Telegram 429, retry in ${err.retryAfter}s (attempt ${attempt + 1}/${TG_MAX_RETRIES})`);
+      await sleep(err.retryAfter * 1000 + 250);
+    } finally {
+      tgLastSentAt = Date.now();
+    }
+  }
+}
+
+function sendTelegramRaw(text) {
   const payload = JSON.stringify({ chat_id: CHAT_ID, text });
   return new Promise((resolve, reject) => {
     const req = https.request(
@@ -105,16 +136,30 @@ function sendTelegram(text) {
           if (res.statusCode >= 200 && res.statusCode < 300) {
             resolve(JSON.parse(raw));
           } else {
-            reject(new Error(`Telegram HTTP ${res.statusCode}: ${raw}`));
+            const err = new Error(`Telegram HTTP ${res.statusCode}: ${raw}`);
+            if (res.statusCode === 429) {
+              let retryAfter = 5;
+              try { retryAfter = JSON.parse(raw).parameters.retry_after || retryAfter; } catch {}
+              err.retryAfter = retryAfter;
+            }
+            reject(err);
           }
         });
       }
     );
+    req.setTimeout(15000, () => req.destroy(new Error("Telegram request timeout")));
     req.on("error", reject);
     req.write(payload);
     req.end();
   });
 }
+
+const CALL_COOLDOWN_MS = 30 * 1000;
+const lastCallAt = new Map();
+setInterval(() => {
+  const cutoff = Date.now() - CALL_COOLDOWN_MS;
+  for (const [k, ts] of lastCallAt) if (ts < cutoff) lastCallAt.delete(k);
+}, 60 * 1000).unref();
 
 function serveStatic(req, res) {
   const urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
@@ -193,6 +238,14 @@ const server = http.createServer(async (req, res) => {
       const table = body.table ? String(body.table).trim().slice(0, 20) : "";
       const type = body.type === "bill" ? "bill" : "waiter";
       if (!table) return sendJson(res, 400, { ok: false, error: "Table is required" });
+
+      // Same table pressing the same button repeatedly → notify only once per cooldown
+      const key = `${table}:${type}`;
+      const now = Date.now();
+      if (now - (lastCallAt.get(key) || 0) < CALL_COOLDOWN_MS) {
+        return sendJson(res, 200, { ok: true, deduped: true });
+      }
+      lastCallAt.set(key, now);
 
       const text = type === "bill"
         ? `💳 Стол ${table}: просит счёт`

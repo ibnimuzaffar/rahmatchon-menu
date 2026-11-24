@@ -512,6 +512,7 @@ document.querySelectorAll("[data-call]").forEach(b => b.addEventListener("click"
   const type = b.dataset.call === "bill" ? "bill" : "waiter";
   const what = t(type);
   b.disabled = true;
+  let cooldown = 0;
   try {
     const res = await fetch("/api/call", {
       method: "POST",
@@ -520,11 +521,12 @@ document.querySelectorAll("[data-call]").forEach(b => b.addEventListener("click"
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
     toast(t("callOk")(what, table));
+    cooldown = 30000; // don't let guests spam the waiter (and the Telegram API)
   } catch (err) {
     console.error(err);
     toast(t("callErr"));
   } finally {
-    b.disabled = false;
+    setTimeout(() => { b.disabled = false; }, cooldown);
   }
 }));
 document.querySelectorAll(".lang-switch button").forEach(b => {
