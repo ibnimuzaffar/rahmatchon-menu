@@ -230,15 +230,17 @@ const I18N = {
     loadErr: "Не удалось загрузить меню. Откройте сайт через локальный или веб-сервер.",
     waiter: "Официант",
     bill: "Счёт",
-    callOk: (what, tbl) => what + ": запрос для стола " + tbl + " (пока заглушка)",
+    callOk: (what, tbl) => what + ": запрос отправлен (стол " + tbl + ")",
     callNoTable: "Откройте меню по QR-коду со стола",
+    callErr: "Не удалось отправить запрос",
     cartBar: (n, sum) => "Корзина: " + n + " поз., сумма " + sum + " сом.",
     cartTitle: "Корзина",
     cartEmpty: "Корзина пуста",
     totalLabel: "Итого",
     commentPlaceholder: "Комментарий к заказу",
     orderBtn: "Заказать",
-    orderSent: "Заказ отправлен (тест)",
+    orderSent: "Заказ отправлен",
+    orderErr: "Не удалось отправить заказ",
     addLabel: "Добавить",
     removeLabel: "Удалить",
     closeLabel: "Закрыть"
@@ -268,15 +270,17 @@ const I18N = {
     loadErr: "Меню бор нашуд. Сомонаро тавассути сервери маҳаллӣ ё веб-сервер кушоед.",
     waiter: "Пешхизмат",
     bill: "Ҳисоб",
-    callOk: (what, tbl) => what + ": дархост барои мизи " + tbl + " (муваққатан санҷишӣ)",
+    callOk: (what, tbl) => what + ": дархост фиристода шуд (мизи " + tbl + ")",
     callNoTable: "Менюро бо QR-коди рӯи миз кушоед",
+    callErr: "Дархост фиристода нашуд",
     cartBar: (n, sum) => "Сабад: " + n + " номгӯй, маблағ " + sum + " сом.",
     cartTitle: "Сабад",
     cartEmpty: "Сабад холӣ аст",
     totalLabel: "Ҷамъ",
     commentPlaceholder: "Шарҳ ба фармоиш",
     orderBtn: "Фармоиш додан",
-    orderSent: "Фармоиш фиристода шуд (тест)",
+    orderSent: "Фармоиш фиристода шуд",
+    orderErr: "Фармоиш фиристода нашуд",
     addLabel: "Илова кардан",
     removeLabel: "Нест кардан",
     closeLabel: "Пӯшидан"
@@ -306,15 +310,17 @@ const I18N = {
     loadErr: "Failed to load menu. Open the site via a local or web server.",
     waiter: "Waiter",
     bill: "Bill",
-    callOk: (what, tbl) => what + ": request for table " + tbl + " (stub)",
+    callOk: (what, tbl) => what + ": request sent (table " + tbl + ")",
     callNoTable: "Open the menu via the table QR code",
+    callErr: "Failed to send request",
     cartBar: (n, sum) => "Cart: " + n + " items, total " + sum + " TJS",
     cartTitle: "Cart",
     cartEmpty: "Cart is empty",
     totalLabel: "Total",
     commentPlaceholder: "Order comment",
     orderBtn: "Order",
-    orderSent: "Order sent (test)",
+    orderSent: "Order sent",
+    orderErr: "Failed to send order",
     addLabel: "Add",
     removeLabel: "Remove",
     closeLabel: "Close"
@@ -501,10 +507,25 @@ function toast(msg){
   const el = $("#toast"); el.textContent = msg; el.style.display = "block";
   clearTimeout(toast.id); toast.id = setTimeout(() => el.style.display = "none", 3000);
 }
-document.querySelectorAll("[data-call]").forEach(b => b.addEventListener("click", () => {
-  const what = t(b.dataset.call === "waiter" ? "waiter" : "bill");
-  /* TODO: отправка на сервер, уведомление официанту этого стола */
-  toast(table ? t("callOk")(what, table) : t("callNoTable"));
+document.querySelectorAll("[data-call]").forEach(b => b.addEventListener("click", async () => {
+  if (!table) { toast(t("callNoTable")); return; }
+  const type = b.dataset.call === "bill" ? "bill" : "waiter";
+  const what = t(type);
+  b.disabled = true;
+  try {
+    const res = await fetch("/api/call", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ table, type })
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    toast(t("callOk")(what, table));
+  } catch (err) {
+    console.error(err);
+    toast(t("callErr"));
+  } finally {
+    b.disabled = false;
+  }
 }));
 document.querySelectorAll(".lang-switch button").forEach(b => {
   b.addEventListener("click", () => setLang(b.dataset.lang));
@@ -539,18 +560,31 @@ $("#cartComment").addEventListener("input", e => {
   cart.comment = e.target.value;
   saveCart();
 });
-$("#orderBtn").addEventListener("click", () => {
+$("#orderBtn").addEventListener("click", async () => {
   const items = Object.entries(cart.items)
     .filter(([id, qty]) => qty > 0 && itemById.has(id))
     .map(([id, qty]) => ({ id, qty }));
   if (!items.length) return;
+  const btn = $("#orderBtn");
   const order = { table: table || null, items, comment: cart.comment.trim() };
-  console.log(JSON.stringify(order), order);
-  cart = { items: {}, comment: "" };
-  saveCart();
-  renderCart();
-  $("#cartModal").classList.remove("open");
-  toast(t("orderSent"));
+  btn.disabled = true;
+  try {
+    const res = await fetch("/api/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order)
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    cart = { items: {}, comment: "" };
+    saveCart();
+    renderCart();
+    $("#cartModal").classList.remove("open");
+    toast(t("orderSent"));
+  } catch (err) {
+    console.error(err);
+    toast(t("orderErr"));
+    btn.disabled = false;
+  }
 });
 
 $("#q").addEventListener("input", e => render(e.target.value));
