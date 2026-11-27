@@ -185,7 +185,7 @@ section h2{margin:24px 0 8px;font-family:"Playfair Display",Georgia,serif;font-s
     </div>
     <div class="cart-list" id="cartList"></div>
     <div class="cart-foot">
-      <textarea id="cartComment" class="cart-comment" rows="2"></textarea>
+      <textarea id="cartComment" class="cart-comment" rows="2" maxlength="200"></textarea>
       <div class="cart-total-row">
         <span id="cartTotalLabel">Итого</span>
         <span id="cartTotalVal">0 сом.</span>
@@ -507,6 +507,17 @@ function toast(msg){
   const el = $("#toast"); el.textContent = msg; el.style.display = "block";
   clearTimeout(toast.id); toast.id = setTimeout(() => el.style.display = "none", 3000);
 }
+const DEVICE_ID = (() => {
+  try {
+    let id = localStorage.getItem("device_id");
+    if (!id) {
+      id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now());
+      localStorage.setItem("device_id", id);
+    }
+    return id;
+  } catch (_) { return "anon"; }
+})();
+
 document.querySelectorAll("[data-call]").forEach(b => b.addEventListener("click", async () => {
   if (!table) { toast(t("callNoTable")); return; }
   const type = b.dataset.call === "bill" ? "bill" : "waiter";
@@ -516,7 +527,7 @@ document.querySelectorAll("[data-call]").forEach(b => b.addEventListener("click"
   try {
     const res = await fetch("/api/call", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-Device-Id": DEVICE_ID },
       body: JSON.stringify({ table, type })
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
@@ -571,9 +582,9 @@ $("#orderBtn").addEventListener("click", async () => {
   const order = { table: table || null, items, comment: cart.comment.trim() };
   btn.disabled = true;
   try {
-    const res = await fetch("/api/order", {
+    const res = await fetch("/api/orders", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-Device-Id": DEVICE_ID },
       body: JSON.stringify(order)
     });
     if (!res.ok) throw new Error("HTTP " + res.status);

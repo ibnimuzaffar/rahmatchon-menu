@@ -5,15 +5,72 @@
     "title_tj": "Наҳорӣ",
     "title_en": "Breakfast",
     "items": [
-      { "n": "Каша манная", "name_tj": "Шавлаи манная", "name_en": "Semolina porridge", "p": 10 },
-      { "n": "Каша рисовая", "name_tj": "Шавлаи биринҷӣ", "name_en": "Rice porridge", "p": 10 },
-      { "n": "Английский завтрак", "name_tj": "Наҳории англисӣ", "name_en": "English breakfast", "p": 25 },
-      { "n": "Сырники", "name_tj": "Сырники", "name_en": "Cottage cheese pancakes", "d": "2 шт", "description_tj": "2 дона", "description_en": "2 pcs", "p": null },
-      { "n": "Блинчики с мясом", "name_tj": "Блинчик бо гӯшт", "name_en": "Meat crepes", "p": 9 },
-      { "n": "Блинчики с творогом", "name_tj": "Блинчик бо творог", "name_en": "Cottage cheese crepes", "p": 7 },
-      { "n": "Колбаса жареная", "name_tj": "Ҳасиби бирён", "name_en": "Fried sausage", "p": 10 },
-      { "n": "Сосиски жареные", "name_tj": "Сосискаи бирён", "name_en": "Fried sausages", "p": 3 },
-      { "n": "Яйцо жареное", "name_tj": "Тухми бирён", "name_en": "Fried egg", "p": 3 }
+      {
+        "n": "Каша манная",
+        "name_tj": "Шавлаи манная",
+        "name_en": "Semolina porridge",
+        "p": 10,
+        "id": "breakfast-0"
+      },
+      {
+        "n": "Каша рисовая",
+        "name_tj": "Шавлаи биринҷӣ",
+        "name_en": "Rice porridge",
+        "p": 10,
+        "id": "breakfast-1"
+      },
+      {
+        "n": "Английский завтрак",
+        "name_tj": "Наҳории англисӣ",
+        "name_en": "English breakfast",
+        "p": 25,
+        "id": "breakfast-2"
+      },
+      {
+        "n": "Сырники",
+        "name_tj": "Сырники",
+        "name_en": "Cottage cheese pancakes",
+        "d": "2 шт",
+        "description_tj": "2 дона",
+        "description_en": "2 pcs",
+        "p": null,
+        "id": "breakfast-3"
+      },
+      {
+        "n": "Блинчики с мясом",
+        "name_tj": "Блинчик бо гӯшт",
+        "name_en": "Meat crepes",
+        "p": 9,
+        "id": "breakfast-4"
+      },
+      {
+        "n": "Блинчики с творогом",
+        "name_tj": "Блинчик бо творог",
+        "name_en": "Cottage cheese crepes",
+        "p": 7,
+        "id": "breakfast-5"
+      },
+      {
+        "n": "Колбаса жареная",
+        "name_tj": "Ҳасиби бирён",
+        "name_en": "Fried sausage",
+        "p": 10,
+        "id": "breakfast-6"
+      },
+      {
+        "n": "Сосиски жареные",
+        "name_tj": "Сосискаи бирён",
+        "name_en": "Fried sausages",
+        "p": 3,
+        "id": "breakfast-7"
+      },
+      {
+        "n": "Яйцо жареное",
+        "name_tj": "Тухми бирён",
+        "name_en": "Fried egg",
+        "p": 3,
+        "id": "breakfast-8"
+      }
     ]
   },
   {
@@ -29,7 +86,8 @@
         "d": "Микс-салат, бон-филе, сыр, жареная груша, фисташки, соус имбирный",
         "description_tj": "Салати омехта, бон-филе, панир, ноки бирён, писта, соуси занҷабил",
         "description_en": "Mixed greens, beef tenderloin, cheese, roasted pear, pistachios, ginger dressing",
-        "p": null
+        "p": null,
+        "id": "salads-0"
       },
       {
         "n": "Овощное ассорти",
@@ -38,7 +96,8 @@
         "d": "Помидор, огурцы, чака, лимон, редиска, стручковый перец, зелень, болгарский перец",
         "description_tj": "Помидор, бодиринг, чакка, лимӯ, турбча, қаламфури тез, кабудӣ, қаламфури булғорӣ",
         "description_en": "Tomatoes, cucumbers, chaka, lemon, radish, chili pepper, herbs, bell pepper",
-        "p": null
+        "p": null,
+        "id": "salads-1"
       },
       {
         "n": "Маринованное ассорти",
@@ -47,7 +106,8 @@
         "d": "Маринованные огурец и помидор, лук анзур, квашеная капуста, черри, чакка, морковь",
         "description_tj": "Бодиринг ва помидори шӯр, пиёзи анзур, карами шӯр, черри, чакка, сабзӣ",
         "description_en": "Pickled cucumber & tomato, anzur onion, sauerkraut, cherry tomatoes, chaka, carrots",
-        "p": null
+        "p": null,
+        "id": "salads-2"
       },
       {
         "n": "Мясное ассорти",
@@ -56,7 +116,8 @@
         "d": "Язык говяжий, каурдок говяжий, казы говяжий, рулет говяжий",
         "description_tj": "Забони гов, қавурдоқи гов, қазӣ, рулети говӣ",
         "description_en": "Beef tongue, kavurdok, kazy, beef roll",
-        "p": null
+        "p": null,
+        "id": "salads-3"
       },
       {
         "n": "Шакароб",
@@ -65,7 +126,8 @@
         "d": "Помидоры свежие, лук, зелень",
         "description_tj": "Помидори тару тоза, пиёз, кабудӣ",
         "description_en": "Fresh tomatoes, onion, herbs",
-        "p": 10
+        "p": 10,
+        "id": "salads-4"
       },
       {
         "n": "Шакароб",
@@ -74,7 +136,8 @@
         "d": "Помидоры свежие, лук, зелень",
         "description_tj": "Помидори тару тоза, пиёз, кабудӣ",
         "description_en": "Fresh tomatoes, onion, herbs",
-        "p": 15
+        "p": 15,
+        "id": "salads-5"
       },
       {
         "n": "Салат Рахматчон",
@@ -83,7 +146,8 @@
         "d": "Говяжий язык, кавурдок, курица, свежие и маринованные огурцы, майонез, орехи, сыр, яйцо отварное",
         "description_tj": "Забони гов, қавурдоқ, мурғ, бодиринги тару шӯр, майонез, чормағз, панир, тухми обпаз",
         "description_en": "Beef tongue, kavurdok, chicken, fresh & pickled cucumbers, mayo, walnuts, cheese, boiled egg",
-        "p": 24
+        "p": 24,
+        "id": "salads-6"
       },
       {
         "n": "Хрустящие баклажаны",
@@ -92,7 +156,8 @@
         "d": "Помидоры свежие, сыр, баклажаны, соус фирменный, руккола",
         "description_tj": "Помидори тару тоза, панир, боимҷон, соуси фирменӣ, руккола",
         "description_en": "Fresh tomatoes, cheese, eggplant, house sauce, arugula",
-        "p": 24
+        "p": 24,
+        "id": "salads-7"
       },
       {
         "n": "Цезарь с курицей",
@@ -101,7 +166,8 @@
         "d": "Куриное филе, помидоры черри, сыр, соус цезарь, пекинская капуста, сухарики",
         "description_tj": "Филеи мурғ, помидори черри, панир, соуси цезарь, карами пекинӣ, нонреза",
         "description_en": "Chicken fillet, cherry tomatoes, cheese, Caesar dressing, napa cabbage, croutons",
-        "p": null
+        "p": null,
+        "id": "salads-8"
       }
     ]
   },
@@ -111,14 +177,49 @@
     "title_tj": "Таомҳои якум",
     "title_en": "Soups",
     "items": [
-      { "n": "Сырный суп", "name_tj": "Шӯрбои панирӣ", "name_en": "Cheese soup", "p": 18 },
-      { "n": "Шурпа говяжий", "p": 29 },
-      { "n": "Илик шурпа", "p": 32 },
-      { "n": "Хом шурпа", "p": 31 },
-      { "n": "Борщ", "name_en": "Borscht", "p": 18 },
-      { "n": "Реза шурпа", "p": 18 },
-      { "n": "Джавари", "p": 18 },
-      { "n": "Мастова", "p": 16 }
+      {
+        "n": "Сырный суп",
+        "name_tj": "Шӯрбои панирӣ",
+        "name_en": "Cheese soup",
+        "p": 18,
+        "id": "first-0"
+      },
+      {
+        "n": "Шурпа говяжий",
+        "p": 29,
+        "id": "first-1"
+      },
+      {
+        "n": "Илик шурпа",
+        "p": 32,
+        "id": "first-2"
+      },
+      {
+        "n": "Хом шурпа",
+        "p": 31,
+        "id": "first-3"
+      },
+      {
+        "n": "Борщ",
+        "name_en": "Borscht",
+        "p": 18,
+        "id": "first-4"
+      },
+      {
+        "n": "Реза шурпа",
+        "p": 18,
+        "id": "first-5"
+      },
+      {
+        "n": "Джавари",
+        "p": 18,
+        "id": "first-6"
+      },
+      {
+        "n": "Мастова",
+        "p": 16,
+        "id": "first-7"
+      }
     ]
   },
   {
@@ -127,7 +228,11 @@
     "title_tj": "Таомҳои дуюм",
     "title_en": "Main Courses",
     "items": [
-      { "n": "Кавурдок", "p": 32 },
+      {
+        "n": "Кавурдок",
+        "p": 32,
+        "id": "second-0"
+      },
       {
         "n": "Котлет домашний",
         "name_tj": "Котлети хонагӣ",
@@ -135,9 +240,14 @@
         "d": "Говяжий фарш, специи",
         "description_tj": "Қимаи гов, адвиёт",
         "description_en": "Minced beef, spices",
-        "p": 30
+        "p": 30,
+        "id": "second-1"
       },
-      { "n": "Чаза", "p": 32 },
+      {
+        "n": "Чаза",
+        "p": 32,
+        "id": "second-2"
+      },
       {
         "n": "Котлет Рахматчон",
         "name_tj": "Котлет Рахматчон",
@@ -145,7 +255,8 @@
         "d": "Говяжий фарш, сыр, помидор, грибы, специи",
         "description_tj": "Қимаи гов, панир, помидор, занбурӯғ, адвиёт",
         "description_en": "Minced beef, cheese, tomato, mushrooms, spices",
-        "p": 34
+        "p": 34,
+        "id": "second-3"
       },
       {
         "n": "Мясо в фольге",
@@ -154,7 +265,8 @@
         "d": "Говяжье мясо, лук, болгарский перец, помидор, сливочное масло, зелень, специи",
         "description_tj": "Гӯшти гов, пиёз, қаламфури булғорӣ, помидор, равғани маска, кабудӣ, адвиёт",
         "description_en": "Beef, onion, bell pepper, tomato, butter, herbs, spices",
-        "p": 40
+        "p": 40,
+        "id": "second-4"
       },
       {
         "n": "Фрикасе",
@@ -162,7 +274,8 @@
         "d": "Куриная грудка, лук, грибы шампиньоны, сливки, пюре, специи",
         "description_tj": "Синаи мурғ, пиёз, шампиньон, қаймоқ, пюре, адвиёт",
         "description_en": "Chicken breast, onion, mushrooms, cream, mashed potatoes, spices",
-        "p": 42
+        "p": 42,
+        "id": "second-5"
       },
       {
         "n": "Стейк от шефа",
@@ -171,7 +284,8 @@
         "d": "Говяжья вырезка, помидор, баклажан, кабачки, болгарский перец, специи",
         "description_tj": "Лаҳми гов, помидор, боимҷон, кадуча, қаламфури булғорӣ, адвиёт",
         "description_en": "Beef tenderloin, tomato, eggplant, zucchini, bell pepper, spices",
-        "p": 94
+        "p": 94,
+        "id": "second-6"
       },
       {
         "n": "Мясо по-домашнему",
@@ -180,16 +294,24 @@
         "d": "Говяжье мясо, лук, перец, помидор, болгарский перец, картошка, специи",
         "description_tj": "Гӯшти гов, пиёз, қаламфур, помидор, қаламфури булғорӣ, картошка, адвиёт",
         "description_en": "Beef, onion, pepper, tomato, bell pepper, potatoes, spices",
-        "p": 42
+        "p": 42,
+        "id": "second-7"
       },
       {
         "n": "Сатмава",
         "d": "Говяжье мясо, рис, лук, помидор, болгарский перец, аджика, томат, чеснок, специи",
         "description_tj": "Гӯшти гов, биринҷ, пиёз, помидор, қаламфури булғорӣ, аҷика, томат, сир, адвиёт",
         "description_en": "Beef, rice, onion, tomato, bell pepper, adjika, tomato paste, garlic, spices",
-        "p": 42
+        "p": 42,
+        "id": "second-8"
       },
-      { "n": "Мясо по-французски", "name_tj": "Гӯшт ба тарзи фаронсавӣ", "name_en": "French-style meat", "p": 52 }
+      {
+        "n": "Мясо по-французски",
+        "name_tj": "Гӯшт ба тарзи фаронсавӣ",
+        "name_en": "French-style meat",
+        "p": 52,
+        "id": "second-9"
+      }
     ]
   },
   {
@@ -205,7 +327,8 @@
         "d": "Мясной фарш из говядины на шампуре",
         "description_tj": "Қимаи гӯшти гов дар сих",
         "description_en": "Minced beef on a skewer",
-        "p": 28
+        "p": 28,
+        "id": "kebab-0"
       },
       {
         "n": "Табака на мангале",
@@ -214,7 +337,8 @@
         "d": "Курица табака, приготовленная на углях",
         "description_tj": "Мурғи табақа дар лахча пухташуда",
         "description_en": "Flattened chicken grilled over charcoal",
-        "p": 50
+        "p": 50,
+        "id": "kebab-1"
       },
       {
         "n": "Фарш бараний",
@@ -223,7 +347,8 @@
         "d": "Мясной фарш из баранины на шампуре",
         "description_tj": "Қимаи гӯшти гӯсфанд дар сих",
         "description_en": "Minced lamb on a skewer",
-        "p": 30
+        "p": 30,
+        "id": "kebab-2"
       },
       {
         "n": "Крылышки",
@@ -232,14 +357,52 @@
         "d": "Куриные крылышки на мангале",
         "description_tj": "Болҳои мурғ дар манғал",
         "description_en": "Charcoal-grilled chicken wings",
-        "p": 25
+        "p": 25,
+        "id": "kebab-3"
       },
-      { "n": "Нежный", "name_tj": "Нежный", "name_en": "Tender beef kebab", "p": 30 },
-      { "n": "Вырезка", "name_tj": "Лаҳм", "name_en": "Beef tenderloin kebab", "p": 39 },
-      { "n": "Ребрышки", "name_tj": "Қабурға", "name_en": "Lamb ribs", "p": 49 },
-      { "n": "Говяжий", "name_tj": "Кабоби говӣ", "name_en": "Beef kebab", "p": 33 },
-      { "n": "Спинка", "name_tj": "Пуштӣ", "name_en": "Lamb loin", "p": null, "off": true },
-      { "n": "Баранина", "name_tj": "Кабоби гӯсфандӣ", "name_en": "Lamb kebab", "p": 35 }
+      {
+        "n": "Нежный",
+        "name_tj": "Нежный",
+        "name_en": "Tender beef kebab",
+        "p": 30,
+        "id": "kebab-4"
+      },
+      {
+        "n": "Вырезка",
+        "name_tj": "Лаҳм",
+        "name_en": "Beef tenderloin kebab",
+        "p": 39,
+        "id": "kebab-5"
+      },
+      {
+        "n": "Ребрышки",
+        "name_tj": "Қабурға",
+        "name_en": "Lamb ribs",
+        "p": 49,
+        "id": "kebab-6"
+      },
+      {
+        "n": "Говяжий",
+        "name_tj": "Кабоби говӣ",
+        "name_en": "Beef kebab",
+        "p": 33,
+        "id": "kebab-7"
+      },
+      {
+        "n": "Спинка",
+        "name_tj": "Пуштӣ",
+        "name_en": "Lamb loin",
+        "p": null,
+        "off": true,
+        "id": "kebab-8"
+      },
+      {
+        "n": "Баранина",
+        "name_tj": "Кабоби гӯсфандӣ",
+        "name_en": "Lamb kebab",
+        "p": 35,
+        "id": "kebab-9"
+      }
     ]
   },
   {
@@ -248,11 +411,42 @@
     "title_tj": "Гарнир",
     "title_en": "Sides",
     "items": [
-      { "n": "Овощи на гриле", "name_tj": "Сабзавот дар грил", "name_en": "Grilled vegetables", "p": null },
-      { "n": "Рис", "name_tj": "Биринҷ", "name_en": "Rice", "p": 6 },
-      { "n": "Гречка", "name_en": "Buckwheat", "p": 6 },
-      { "n": "Картошка фри", "name_tj": "Картошкаи фри", "name_en": "French fries", "p": 10 },
-      { "n": "Пюре", "name_en": "Mashed potatoes", "d": "Картофельное", "description_tj": "Аз картошка", "description_en": "Mashed", "p": 8 }
+      {
+        "n": "Овощи на гриле",
+        "name_tj": "Сабзавот дар грил",
+        "name_en": "Grilled vegetables",
+        "p": null,
+        "id": "sides-0"
+      },
+      {
+        "n": "Рис",
+        "name_tj": "Биринҷ",
+        "name_en": "Rice",
+        "p": 6,
+        "id": "sides-1"
+      },
+      {
+        "n": "Гречка",
+        "name_en": "Buckwheat",
+        "p": 6,
+        "id": "sides-2"
+      },
+      {
+        "n": "Картошка фри",
+        "name_tj": "Картошкаи фри",
+        "name_en": "French fries",
+        "p": 10,
+        "id": "sides-3"
+      },
+      {
+        "n": "Пюре",
+        "name_en": "Mashed potatoes",
+        "d": "Картофельное",
+        "description_tj": "Аз картошка",
+        "description_en": "Mashed",
+        "p": 8,
+        "id": "sides-4"
+      }
     ]
   },
   {
@@ -261,12 +455,53 @@
     "title_tj": "Шириниҳо",
     "title_en": "Desserts",
     "items": [
-      { "n": "Штрудель яблочный", "name_tj": "Штрудели себӣ", "name_en": "Apple strudel", "p": 20 },
-      { "n": "Чизкейк", "name_en": "Cheesecake", "p": 24 },
-      { "n": "Жареное мороженое", "name_tj": "Яхмоси бирён", "name_en": "Fried ice cream", "p": 20 },
-      { "n": "Фруктовая нарезка", "name_tj": "Меваҳои бурида", "name_en": "Fruit platter", "w": "малая", "w_tj": "хурд", "w_en": "Small", "p": 75 },
-      { "n": "Фруктовая нарезка", "name_tj": "Меваҳои бурида", "name_en": "Fruit platter", "w": "большая", "w_tj": "калон", "w_en": "Large", "p": 100 },
-      { "n": "Шоколадный фондан", "name_tj": "Фондани шоколадӣ", "name_en": "Chocolate fondant", "p": 20 }
+      {
+        "n": "Штрудель яблочный",
+        "name_tj": "Штрудели себӣ",
+        "name_en": "Apple strudel",
+        "p": 20,
+        "id": "dessert-0"
+      },
+      {
+        "n": "Чизкейк",
+        "name_en": "Cheesecake",
+        "p": 24,
+        "id": "dessert-1"
+      },
+      {
+        "n": "Жареное мороженое",
+        "name_tj": "Яхмоси бирён",
+        "name_en": "Fried ice cream",
+        "p": 20,
+        "id": "dessert-2"
+      },
+      {
+        "n": "Фруктовая нарезка",
+        "name_tj": "Меваҳои бурида",
+        "name_en": "Fruit platter",
+        "w": "малая",
+        "w_tj": "хурд",
+        "w_en": "Small",
+        "p": 75,
+        "id": "dessert-3"
+      },
+      {
+        "n": "Фруктовая нарезка",
+        "name_tj": "Меваҳои бурида",
+        "name_en": "Fruit platter",
+        "w": "большая",
+        "w_tj": "калон",
+        "w_en": "Large",
+        "p": 100,
+        "id": "dessert-4"
+      },
+      {
+        "n": "Шоколадный фондан",
+        "name_tj": "Фондани шоколадӣ",
+        "name_en": "Chocolate fondant",
+        "p": 20,
+        "id": "dessert-5"
+      }
     ]
   },
   {
@@ -275,12 +510,60 @@
     "title_tj": "Мохито",
     "title_en": "Mojito",
     "items": [
-      { "n": "Апельсиновый", "name_tj": "Апелсинӣ", "name_en": "Orange", "w": "380 мл", "w_en": "380 ml", "p": 12 },
-      { "n": "Апельсиновый", "name_tj": "Апелсинӣ", "name_en": "Orange", "w": "1,2 л", "w_en": "1.2 L", "p": 36 },
-      { "n": "Апельсиновый", "name_tj": "Апелсинӣ", "name_en": "Orange", "w": "2 л", "w_en": "2 L", "p": 55 },
-      { "n": "Клубничный", "name_tj": "Қулфинайӣ", "name_en": "Strawberry", "w": "380 мл", "w_en": "380 ml", "p": 12 },
-      { "n": "Клубничный", "name_tj": "Қулфинайӣ", "name_en": "Strawberry", "w": "1,2 л", "w_en": "1.2 L", "p": 36 },
-      { "n": "Клубничный", "name_tj": "Қулфинайӣ", "name_en": "Strawberry", "w": "2 л", "w_en": "2 L", "p": 55 }
+      {
+        "n": "Апельсиновый",
+        "name_tj": "Апелсинӣ",
+        "name_en": "Orange",
+        "w": "380 мл",
+        "w_en": "380 ml",
+        "p": 12,
+        "id": "mojito-0"
+      },
+      {
+        "n": "Апельсиновый",
+        "name_tj": "Апелсинӣ",
+        "name_en": "Orange",
+        "w": "1,2 л",
+        "w_en": "1.2 L",
+        "p": 36,
+        "id": "mojito-1"
+      },
+      {
+        "n": "Апельсиновый",
+        "name_tj": "Апелсинӣ",
+        "name_en": "Orange",
+        "w": "2 л",
+        "w_en": "2 L",
+        "p": 55,
+        "id": "mojito-2"
+      },
+      {
+        "n": "Клубничный",
+        "name_tj": "Қулфинайӣ",
+        "name_en": "Strawberry",
+        "w": "380 мл",
+        "w_en": "380 ml",
+        "p": 12,
+        "id": "mojito-3"
+      },
+      {
+        "n": "Клубничный",
+        "name_tj": "Қулфинайӣ",
+        "name_en": "Strawberry",
+        "w": "1,2 л",
+        "w_en": "1.2 L",
+        "p": 36,
+        "id": "mojito-4"
+      },
+      {
+        "n": "Клубничный",
+        "name_tj": "Қулфинайӣ",
+        "name_en": "Strawberry",
+        "w": "2 л",
+        "w_en": "2 L",
+        "p": 55,
+        "id": "mojito-5"
+      }
     ]
   }
 ]

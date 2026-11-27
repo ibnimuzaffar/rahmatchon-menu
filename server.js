@@ -1,122 +1,111 @@
+require("dotenv").config();
+
 const http = require("http");
 const https = require("https");
-const fs = require("fs");
 const path = require("path");
+const fs = require("fs");
+const express = require("express");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const Database = require("better-sqlite3");
 
-const ROOT = __dirname;
-
-// Load .env if present (no external dependencies required)
-const envPath = path.join(ROOT, ".env");
-if (fs.existsSync(envPath)) {
-  for (const rawLine of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith("#")) continue;
-    const eq = line.indexOf("=");
-    if (eq === -1) continue;
-    const key = line.slice(0, eq).trim();
-    const val = line.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
-    if (!(key in process.env)) process.env[key] = val;
-  }
-}
-
+const HOST = (process.env.HOST || "127.0.0.1").trim();
 const PORT = Number(process.env.PORT) || 3000;
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
+const BOT_TOKEN = (process.env.TELEGRAM_BOT_TOKEN || "").trim();
+const CHAT_ID = (process.env.TELEGRAM_CHAT_ID || "").trim();
 
-const MIME = {
-  ".html": "text/html; charset=utf-8",
-  ".json": "application/json; charset=utf-8",
-  ".css": "text/css; charset=utf-8",
-  ".js": "application/javascript; charset=utf-8",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".png": "image/png",
-  ".webp": "image/webp",
-  ".svg": "image/svg+xml"
-};
+const ALLOWED_TABLES = new Set(
+  (process.env.ALLOWED_TABLES || "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20")
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean)
+);
 
-function loadMenuMap() {
-  const menu = JSON.parse(fs.readFileSync(path.join(ROOT, "menu.json"), "utf8"));
+// Load and validate public/menu.json on startup
+function loadAndValidateMenu() {
+  const menuPath = path.join(__dirname, "public", "menu.json");
+  const menu = JSON.parse(fs.readFileSync(menuPath, "utf8"));
   const map = new Map();
   for (const cat of menu) {
-    (cat.items || []).forEach((it, idx) => {
-      const id = it.id || `${cat.id}-${idx}`;
-      map.set(id, it);
-    });
+    for (const it of cat.items || []) {
+      if (typeof it.id !== "string" || !it.id.trim()) {
+        throw new Error(`Missing item id in category "${cat.id}": ${it.n}`);
+      }
+      if (map.has(it.id)) {
+        throw new Error(`Duplicate item id in menu.json: "${it.id}"`);
+      }
+      map.set(it.id, it);
+    }
   }
   return map;
 }
 
-function sendJson(res, status, data) {
-  const body = JSON.stringify(data);
-  res.writeHead(status, {
-    "Content-Type": "application/json; charset=utf-8",
-    "Content-Length": Buffer.byteLength(body)
-  });
-  res.end(body);
+const menuMap = loadAndValidateMenu();
+console.log(`Loaded menu.json: ${menuMap.size} unique items.`);
+
+// SQLite database
+const db = new Database(path.join(__dirname, "orders.db"));
+db.pragma("journal_mode = WAL");
+db.exec(`
+  CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_no TEXT NOT NULL,
+    items TEXT NOT NULL,
+    comment TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'new' CHECK(status IN ('new', 'confirmed', 'paid', 'cancelled')),
+    tg_status TEXT NOT NULL DEFAULT 'pending' CHECK(tg_status IN ('pending', 'sent', 'failed')),
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+const insertOrderStmt = db.prepare(
+  "INSERT INTO orders (table_no, items, comment, status, tg_status) VALUES (?, ?, ?, 'new', 'pending')"
+);
+const selectOrderStmt = db.prepare("SELECT * FROM orders WHERE id = ?");
+const updateTgStatusStmt = db.prepare("UPDATE orders SET tg_status = ? WHERE id = ?");
+const selectPendingOrdersStmt = db.prepare("SELECT id FROM orders WHERE tg_status = 'pending' ORDER BY id ASC");
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
-function readJsonBody(req, maxBytes = 64 * 1024) {
-  return new Promise((resolve, reject) => {
-    let size = 0;
-    const chunks = [];
-    req.on("data", chunk => {
-      size += chunk.length;
-      if (size > maxBytes) {
-        reject(new Error("Payload too large"));
-        req.destroy();
-        return;
-      }
-      chunks.push(chunk);
-    });
-    req.on("end", () => {
-      try {
-        resolve(JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}"));
-      } catch {
-        reject(new Error("Invalid JSON"));
-      }
-    });
-    req.on("error", reject);
+function formatOrderTelegramText(orderRow) {
+  const items = JSON.parse(orderRow.items);
+  let total = 0;
+  const lines = items.map(({ id, qty }) => {
+    const it = menuMap.get(id);
+    const sum = it.p * qty;
+    total += sum;
+    const w = it.w ? ` (${escapeHtml(it.w)})` : "";
+    return `• ${escapeHtml(it.n)}${w} × ${qty} = ${sum} сом.`;
   });
+  const parts = [
+    `🍽 <b>Новый заказ #${orderRow.id}</b>`,
+    `Стол: <b>${escapeHtml(orderRow.table_no)}</b>`,
+    "",
+    ...lines,
+    "",
+    `Итого: <b>${total} сом.</b>`
+  ];
+  if (orderRow.comment) {
+    parts.push(`Комментарий: ${escapeHtml(orderRow.comment)}`);
+  }
+  return parts.join("\n");
 }
 
-// Telegram limits: ~1 msg/sec per chat, ~20 msg/min per group.
-// All messages go to one chat, so send them strictly one by one with a gap.
-const TG_MIN_INTERVAL_MS = Number(process.env.TELEGRAM_MIN_INTERVAL_MS) || 3100;
-const TG_MAX_RETRIES = 3;
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-let tgQueue = Promise.resolve();
-let tgLastSentAt = 0;
-
-function sendTelegram(text) {
+function sendTelegramRaw(text) {
   if (!BOT_TOKEN || !CHAT_ID) {
     console.log("[Telegram dry-run]\n" + text + "\n---");
     return Promise.resolve({ dryRun: true });
   }
-  const job = tgQueue.then(() => sendTelegramWithRetry(text));
-  tgQueue = job.catch(() => {}); // keep the queue alive after a failure
-  return job;
-}
-
-async function sendTelegramWithRetry(text) {
-  for (let attempt = 0; ; attempt++) {
-    const wait = tgLastSentAt + TG_MIN_INTERVAL_MS - Date.now();
-    if (wait > 0) await sleep(wait);
-    try {
-      return await sendTelegramRaw(text);
-    } catch (err) {
-      if (err.retryAfter == null || attempt >= TG_MAX_RETRIES) throw err;
-      console.warn(`Telegram 429, retry in ${err.retryAfter}s (attempt ${attempt + 1}/${TG_MAX_RETRIES})`);
-      await sleep(err.retryAfter * 1000 + 250);
-    } finally {
-      tgLastSentAt = Date.now();
-    }
-  }
-}
-
-function sendTelegramRaw(text) {
-  const payload = JSON.stringify({ chat_id: CHAT_ID, text });
+  const payload = JSON.stringify({
+    chat_id: CHAT_ID,
+    text,
+    parse_mode: "HTML"
+  });
   return new Promise((resolve, reject) => {
     const req = https.request(
       `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
@@ -129,145 +118,213 @@ function sendTelegramRaw(text) {
         }
       },
       res => {
-        const out = [];
-        res.on("data", c => out.push(c));
+        const chunks = [];
+        res.on("data", c => chunks.push(c));
         res.on("end", () => {
-          const raw = Buffer.concat(out).toString("utf8");
+          const raw = Buffer.concat(chunks).toString("utf8");
+          let parsed = null;
+          try { parsed = JSON.parse(raw); } catch {}
           if (res.statusCode >= 200 && res.statusCode < 300) {
-            resolve(JSON.parse(raw));
-          } else {
-            const err = new Error(`Telegram HTTP ${res.statusCode}: ${raw}`);
-            if (res.statusCode === 429) {
-              let retryAfter = 5;
-              try { retryAfter = JSON.parse(raw).parameters.retry_after || retryAfter; } catch {}
-              err.retryAfter = retryAfter;
-            }
-            reject(err);
+            resolve(parsed || {});
+            return;
           }
+          const err = new Error(`Telegram HTTP ${res.statusCode}: ${raw}`);
+          err.statusCode = res.statusCode;
+          err.retryAfter = parsed && parsed.parameters && Number(parsed.parameters.retry_after);
+          reject(err);
         });
       }
     );
-    req.setTimeout(15000, () => req.destroy(new Error("Telegram request timeout")));
     req.on("error", reject);
     req.write(payload);
     req.end();
   });
 }
 
-const CALL_COOLDOWN_MS = 30 * 1000;
-const lastCallAt = new Map();
-setInterval(() => {
-  const cutoff = Date.now() - CALL_COOLDOWN_MS;
-  for (const [k, ts] of lastCallAt) if (ts < cutoff) lastCallAt.delete(k);
-}, 60 * 1000).unref();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-function serveStatic(req, res) {
-  const urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
-  const rel = urlPath === "/" ? "index.html" : urlPath.replace(/^\/+/, "");
-  const filePath = path.resolve(ROOT, rel);
-  if (!filePath.startsWith(ROOT)) {
-    res.writeHead(403);
-    res.end("Forbidden");
-    return;
-  }
-  if (path.basename(filePath).startsWith(".env") || path.basename(filePath) === "server.js") {
-    res.writeHead(404);
-    res.end("Not found");
-    return;
-  }
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      res.writeHead(404);
-      res.end("Not found");
-      return;
+// Sequential Telegram queue: max 1 message/sec, up to 5 retries on 429/errors
+const tgQueue = [];
+let tgWorkerRunning = false;
+let lastTgSentAt = 0;
+
+async function sendWithRetry(text) {
+  const maxRetries = 5;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const elapsed = Date.now() - lastTgSentAt;
+    if (elapsed < 1000) await sleep(1000 - elapsed);
+    lastTgSentAt = Date.now();
+    try {
+      return await sendTelegramRaw(text);
+    } catch (err) {
+      if (attempt === maxRetries) throw err;
+      const waitSec = err.statusCode === 429 && err.retryAfter > 0 ? err.retryAfter + 1 : 2;
+      console.warn(`Telegram retry ${attempt + 1}/${maxRetries} after ${waitSec}s: ${err.message}`);
+      await sleep(waitSec * 1000);
     }
-    res.writeHead(200, { "Content-Type": MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream" });
-    res.end(data);
-  });
+  }
 }
 
-const server = http.createServer(async (req, res) => {
-  const urlPath = (req.url || "/").split("?")[0];
-
-  if (req.method === "POST" && urlPath === "/api/order") {
-    try {
-      const body = await readJsonBody(req);
-      const table = body.table ? String(body.table).trim().slice(0, 20) : null;
-      const comment = body.comment ? String(body.comment).trim().slice(0, 500) : "";
-      const rawItems = Array.isArray(body.items) ? body.items : [];
-      if (!rawItems.length) return sendJson(res, 400, { ok: false, error: "Empty order" });
-
-      const menuMap = loadMenuMap();
-      const lines = [];
-      let total = 0;
-
-      for (const entry of rawItems) {
-        const id = entry && typeof entry.id === "string" ? entry.id : "";
-        const qty = Number(entry && entry.qty);
-        const item = menuMap.get(id);
-        if (!item || item.off || item.p == null || !Number.isInteger(qty) || qty < 1 || qty > 99) {
-          return sendJson(res, 400, { ok: false, error: `Invalid item: ${id}` });
+async function processTgQueue() {
+  if (tgWorkerRunning) return;
+  tgWorkerRunning = true;
+  try {
+    while (tgQueue.length) {
+      const task = tgQueue.shift();
+      try {
+        if (task.kind === "order") {
+          const row = selectOrderStmt.get(task.orderId);
+          if (!row || row.tg_status !== "pending") continue;
+          await sendWithRetry(formatOrderTelegramText(row));
+          updateTgStatusStmt.run("sent", row.id);
+        } else if (task.kind === "call") {
+          await sendWithRetry(task.text);
         }
-        const sum = item.p * qty;
-        total += sum;
-        const w = item.w ? ` (${item.w})` : "";
-        lines.push(`• ${item.n}${w} × ${qty} = ${sum} сом.`);
+      } catch (err) {
+        console.error("Telegram delivery failed:", err.message);
+        if (task.kind === "order") {
+          updateTgStatusStmt.run("failed", task.orderId);
+        }
       }
-
-      const msgParts = [
-        `🍽 Новый заказ`,
-        `Стол: ${table || "не указан"}`,
-        "",
-        ...lines,
-        "",
-        `Итого: ${total} сом.`
-      ];
-      if (comment) msgParts.push(`Комментарий: ${comment}`);
-
-      const tg = await sendTelegram(msgParts.join("\n"));
-      return sendJson(res, 200, { ok: true, dryRun: Boolean(tg.dryRun) });
-    } catch (err) {
-      console.error("Order error:", err.message);
-      return sendJson(res, 500, { ok: false, error: "Failed to process order" });
     }
+  } finally {
+    tgWorkerRunning = false;
   }
+}
 
-  if (req.method === "POST" && urlPath === "/api/call") {
-    try {
-      const body = await readJsonBody(req);
-      const table = body.table ? String(body.table).trim().slice(0, 20) : "";
-      const type = body.type === "bill" ? "bill" : "waiter";
-      if (!table) return sendJson(res, 400, { ok: false, error: "Table is required" });
+function enqueueOrder(orderId) {
+  tgQueue.push({ kind: "order", orderId });
+  processTgQueue();
+}
 
-      // Same table pressing the same button repeatedly → notify only once per cooldown
-      const key = `${table}:${type}`;
-      const now = Date.now();
-      if (now - (lastCallAt.get(key) || 0) < CALL_COOLDOWN_MS) {
-        return sendJson(res, 200, { ok: true, deduped: true });
-      }
-      lastCallAt.set(key, now);
+function enqueueCall(text) {
+  tgQueue.push({ kind: "call", text });
+  processTgQueue();
+}
 
-      const text = type === "bill"
-        ? `💳 Стол ${table}: просит счёт`
-        : `🔔 Стол ${table}: зовёт официанта`;
+// Re-enqueue pending orders on startup
+for (const row of selectPendingOrdersStmt.all()) {
+  enqueueOrder(row.id);
+}
 
-      const tg = await sendTelegram(text);
-      return sendJson(res, 200, { ok: true, dryRun: Boolean(tg.dryRun) });
-    } catch (err) {
-      console.error("Call error:", err.message);
-      return sendJson(res, 500, { ok: false, error: "Failed to send notification" });
-    }
+// Express app
+const app = express();
+if (process.env.TRUST_PROXY === "1") {
+  app.set("trust proxy", 1);
+}
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(express.json({ limit: "10kb" }));
+
+app.use((err, req, res, next) => {
+  if (err && err.type === "entity.parse.failed") {
+    return res.status(400).json({ ok: false, error: "Invalid JSON" });
   }
-
-  if (req.method === "GET") return serveStatic(req, res);
-
-  res.writeHead(405);
-  res.end("Method Not Allowed");
+  if (err && err.type === "entity.too.large") {
+    return res.status(413).json({ ok: false, error: "Payload too large" });
+  }
+  next(err);
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running at http://127.0.0.1:${PORT}`);
+const ipLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: "Too many requests from this IP" }
+});
+
+const tableDeviceKey = req => {
+  const tbl = req.body && req.body.table ? String(req.body.table).trim() : "none";
+  const dev = (req.get("x-device-id") || req.ip || "unknown").slice(0, 64);
+  return `${tbl}:${dev}`;
+};
+
+const orderTableOnlyLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  keyGenerator: req => (req.body && req.body.table != null ? String(req.body.table).trim() : "none"),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: "Too many orders for this table" }
+});
+
+const orderTableLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  keyGenerator: tableDeviceKey,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: "Too many orders for this device" }
+});
+
+const callTableLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  keyGenerator: tableDeviceKey,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: "Too many calls for this table" }
+});
+
+app.post("/api/orders", ipLimiter, orderTableOnlyLimiter, orderTableLimiter, (req, res) => {
+  const tableNo = req.body && req.body.table != null ? String(req.body.table).trim() : "";
+  if (!ALLOWED_TABLES.has(tableNo)) {
+    return res.status(400).json({ ok: false, error: "Invalid table number" });
+  }
+
+  const rawComment = req.body && req.body.comment != null ? String(req.body.comment).trim() : "";
+  if (rawComment.length > 200) {
+    return res.status(400).json({ ok: false, error: "Comment must be <= 200 characters" });
+  }
+
+  const rawItems = Array.isArray(req.body && req.body.items) ? req.body.items : [];
+  if (!rawItems.length || rawItems.length > 50) {
+    return res.status(400).json({ ok: false, error: "Order must contain 1..50 items" });
+  }
+
+  const cleanItems = [];
+  for (const entry of rawItems) {
+    const id = entry && typeof entry.id === "string" ? entry.id.trim() : "";
+    const qty = Number(entry && entry.qty);
+    const item = menuMap.get(id);
+    if (!item || item.off || item.p == null || !Number.isInteger(qty) || qty < 1 || qty > 20) {
+      return res.status(400).json({ ok: false, error: `Invalid item or qty: ${id}` });
+    }
+    cleanItems.push({ id, qty });
+  }
+
+  const info = insertOrderStmt.run(tableNo, JSON.stringify(cleanItems), rawComment);
+  const orderId = Number(info.lastInsertRowid);
+  enqueueOrder(orderId);
+
+  return res.status(201).json({ ok: true, orderId });
+});
+
+app.post("/api/call", ipLimiter, callTableLimiter, (req, res) => {
+  const tableNo = req.body && req.body.table != null ? String(req.body.table).trim() : "";
+  if (!ALLOWED_TABLES.has(tableNo)) {
+    return res.status(400).json({ ok: false, error: "Invalid table number" });
+  }
+  const type = req.body && req.body.type;
+  if (type !== "waiter" && type !== "bill") {
+    return res.status(400).json({ ok: false, error: "Invalid call type" });
+  }
+
+  const text = type === "bill"
+    ? `💳 <b>Стол ${escapeHtml(tableNo)}</b>: просит счёт`
+    : `🔔 <b>Стол ${escapeHtml(tableNo)}</b>: зовёт официанта`;
+
+  enqueueCall(text);
+  return res.json({ ok: true });
+});
+
+// Serve static files strictly from public/
+app.use(express.static(path.join(__dirname, "public")));
+
+const server = http.createServer(app);
+server.listen(PORT, HOST, () => {
+  console.log(`Server running at http://${HOST}:${PORT}`);
   if (!BOT_TOKEN || !CHAT_ID) {
-    console.log("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — running in dry-run mode (logging to console).");
+    console.log("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — running in dry-run mode.");
   }
 });

@@ -5,5 +5,12 @@
   "description": "QR-menu and order backend for Rahmatjon Coffeehouse",
   "scripts": {
     "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0"
   }
 }
